@@ -54,7 +54,7 @@ export const useAuthentication = () => {
           if (error.message.includes("Password")) {
             systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres.";
         } else if (error.message.includes("email-already")) {
-            systemErrorMessage = "E-mail já cadastrado.";
+            systemErrorMessage = "E-mail já cadastrado."; 
         } else {
             systemErrorMessage = "Ocorreu um erro, por favor tenta mais tarde.";
         }
@@ -71,4 +71,4 @@ export const useAuthentication = () => {
     }, [])
 
     return {auth, createUser, error, loading};
-}
+} 

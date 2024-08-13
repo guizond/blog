@@ -23,7 +23,7 @@ const Register = () => {
             password
         }
 
-        if (password ===! setConfirmPassword) {
+        if (password !== confirmPassword) {
             setError("As senhas não são iguais!")
             return
         }
