@@ -22,7 +22,7 @@ export const useAuthentication = () => {
     function checkIfIsCancelled() {
         if (cancelled) {
         return;
-        }
+        } 
       }
 
       const createUser = async (data) => {
@@ -40,8 +40,6 @@ export const useAuthentication = () => {
         await updateProfile(user, {
             displayName: data.displayName,
         });
-
-        setLoading(false);
 
        return user;
        
@@ -66,9 +64,44 @@ export const useAuthentication = () => {
     
     };
 
+    // logout - sign out
+    const logout = () => {
+
+      checkIfIsCancelled();
+      signOut(auth);
+
+    }
+
+    // login
+
+    const login = async (data) => {
+      checkIfIsCancelled();
+  
+      setLoading(true);
+      setError(false);
+  
+      try {
+        await signInWithEmailAndPassword(auth, data.email, data.password);
+      } catch (error) {
+        console.log(error.message);
+        console.log(typeof error.message);
+        console.log(error.message.includes("user-not"));
+  
+        let systemErrorMessage;
+  
+        console.log(systemErrorMessage = "An error has ocurred, try again later.");
+  
+        setError(systemErrorMessage);
+      }
+  
+      console.log(error);
+  
+      setLoading(false);
+    };
+
     useEffect(() => {
         return () => setCancelled(true)
     }, [])
 
-    return {auth, createUser, error, loading};
+    return {auth, createUser, error, loading, logout, login};
 } 
