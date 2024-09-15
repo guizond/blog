@@ -3,6 +3,7 @@ import styles from './CreatePost.module.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthValue } from '../../context/AuthContex';
+import { useInsertDocument } from '../../hooks/useInsertDocument';
 
 const CreatePost = () => {
 
@@ -12,8 +13,49 @@ const CreatePost = () => {
     const [tags, setTags] = useState([]);
     const [formError, setFormError] = useState("");
 
+    const {user} = useAuthValue()
+
+    const {insertDocument, response} = useInsertDocument("posts");
+
+    const navigate = useNavigate()
+
     const handleSubmit = (e) =>{
         e.preventDefault();
+        setFormError("")
+
+        // validate image url
+
+        try {
+            new URL(image);
+        } catch (error) {
+            setFormError("The image needs to be an URL.")
+        }
+
+        // create array tags
+
+        const tagsArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
+
+        // check all values
+
+        if (!title || !image || !tags || !body) {
+            setFormError("Please fill in all the fields!");
+        }
+
+        if (formError) return; 
+
+        insertDocument({
+            title,
+            image,
+            body,
+            tagsArray,
+            uid: user.uid,
+            createdBy: user.displayName
+        })
+
+        // redirect to home page
+
+        navigate("/");
+        
     };
 
     return (
@@ -35,13 +77,12 @@ const CreatePost = () => {
                 </label>
                 <label>
                     <span>Tags:</span>
-                    <input type="text" name="tags" required placeholder="Insert tags to your post separated by commas" onChange={(e) => setTitle(e.target.value)} value={tags}/>
+                    <input type="text" name="tags" required placeholder="Insert tags to your post separated by commas" onChange={(e) => setTags(e.target.value)} value={tags}/>
                 </label>
-                <button className="btn">Cadastrar</button>
-
-                {/*!loading && <button className="btn">Cadastrar</button>}
-                {loading && (<button className="btn" disabled>Aguarde...</button>)}
-                {error && <p className="error">{error}</p>*/}
+                {!response.loading && <button className="btn">Cadastrar</button>}
+                {response.loading && (<button className="btn" disabled>Aguarde...</button>)}
+                {response.error && <p className="error">{response.error}</p>}
+                {formError && <p className="error">{formError}</p>}
                 
             </form>
         </div>
